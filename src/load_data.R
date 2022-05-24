@@ -20,14 +20,11 @@ conversions <- c("mean_prices/","calorie_conversions/","units_and_conversions/")
 # before they were verified by users
 original_conversions <- c(".original_calorie_conversions/",".original_mean_prices_conversions/",".original_units/")
 
-new_calorie_files <- files[grep("calorie_conversions", files )]
-shorten_file_names(new_calorie_files)
-
-
+# Loading the full RHoMIS dataset to identify the individual
+# projects and the individual forms (to split the whole dataset)
+# into "Chunks" (as is the case in the main database)
 processed_data <- readr::read_csv("data/processed_data/processed_data.csv")
-
 rhomis_ids <- unique(processed_data$id_rhomis_dataset)
-
 data_chunks <- sapply(rhomis_ids, function(rhomis_id){
     rows <- which(processed_data$id_rhomis_dataset==rhomis_id)
     proj_id <- unique(processed_data$id_proj[rows])
@@ -52,10 +49,15 @@ data_chunks <- sapply(rhomis_ids, function(rhomis_id){
 }, simplify=F)
 
 
-
+# Actually writing the files to the database
 for (file in files){
     # Read in the file
-     data <- readr::read_csv(file)
+    print(file)
+    print(paste(which(files==file), "out of", length(files)))
+
+
+
+     data <- suppressMessages(readr::read_csv(file, col_types = cols()))
 
 
     #' Check whether it is a unit
@@ -119,32 +121,48 @@ for (file in files){
     # Write Dataset
     if (is_data_set){
         data_type<- get_file_name(file)
+                # Split by project and form
+
     for (chunk in data_chunks){
             
             data_chunk <- data[chunk$rows,]
             proj_id <- chunk$proj_id
             form_id <- chunk$form_id
 
-        # Split by project and form
-            add_data_to_db(
-                data=data_chunk,
-                collection = "data",
-                data_type=data_type,
-                database = "rhomis-data-test",
-                url = "mongodb://localhost",
-                projectID=proj_id,
-                formID=form_id,
-                overwrite = F
-            )
+            save_data_set_to_db(
+            data = data_chunk,
+            data_type = data_type,
+            database = "rhomis-data-test",
+            url = "mongodb://localhost",
+            projectID = proj_id,
+            formID = form_id
+        )         
         }
 
     }
 
 
-    print(file)
     # print(paste(is_data_set,is_unit_conversion, is_original_conversion,sep="    "))
     # print("")
 }
+
+data_string <- jsonlite::toJSON(data, pretty = T, na = "null")
+    connection <- connect_to_db(collection, database, url)
+    if (overwrite == F) {
+        data_string <- paste0("{\"projectID\":\"", projectID, 
+            "\",\"formID\":", formID, "\"dataType\":", data_type, 
+            ", \"data\"", ":", data_string, "}")
+        data_string <- gsub("\n", "", data_string, fixed = T)
+        data_string <- gsub("\\\"", "\"", data_string, fixed = T)
+        data_string <- gsub("\"\\", "\"", data_string, fixed = T)
+        connection$insert(data_string)
+    }
+    if (overwrite == T) {
+        connection$update(paste0("{\"projectID\":\"", projectID, 
+            "\",\"formID\":\"", formID, "\"}"), paste0("{\"$set\":{\"data\": ", 
+            data_string, "}}"), upsert = TRUE)
+    }
+    connection$disconnect()
 
 
 #save_set_of_conversions
@@ -153,5 +171,5 @@ for (file in files){
 
 
  for (chunk in data_chunks){
-     print(chunk$form_id)
+     print(chunk$rows)
  }

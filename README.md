@@ -6,6 +6,13 @@ into the RHoMIS 2.0 system. The dashboard should summarise
 data from the publicly available RHoMIS data, which can be
 found [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/TFXQJN)
 
+This repository shows you how to convert the RHoMIS data (found
+on dataverse) into the format in which projects are stored on
+the RHoMIS survey, making it useable for development purposes.
+
+There is also guidance here about how to work on the APIs, which
+will be a necessary part of developing a dashboard.
+
 # Materials
 
 ## Installation and Cloning
@@ -19,17 +26,31 @@ To get started you will need to:
 - fork the [authentication api](https://github.com/l-gorman/rhomis-authenticator)
 - fork the [data api](https://github.com/l-gorman/rhomis-api)
 
-You can learn about mongoDB, and how to interact with it [here](https://www.mongodb.com/docs/mongodb-shell/)
+## Restoring the database from Mongo Dump
 
-## Setup
+Alternatively, I have provided you with access to a data "dump". This
+should allow you to upload all of the data which has been prepared directly
+into a development version of the database.
+
+Download the data dump which has been sent to you. To load it into mongo db, open
+the command line and enter the command:
+
+```
+mongorestore --db rhomis-data-dev path_to_dump_folder
+```
+
+## Creating local DB using dataverse files and R script (more challenging, and takes ages to run)
 
 I have created a script for you to load all of the RHoMIS data into a local
 mongoDB database. Download the data [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/TFXQJN)
 as a zip file. Extract the contents from the zip file and place them in the blank `data`
-directory found in this repository. The folder should contain files like this
+directory found in this repository. Once you have unzipped the file, the
+`data` folder should contain files like this:
 `data/.original_calorie_conversions`, `data/calorie_conversions`...
 
-I have created an R virtual environment (renv) for you. To load the correct packages, run the setup.R
+We will be using an R script to get the data from CSV into
+the mongoDB format. If they work, you will not haI have created an R virtual environment (renv) for you.
+To load the correct packages, run the setup.R
 script. You can do this with the command:
 
 `Rscript src/setup.R`
