@@ -28,7 +28,7 @@ To get started you will need to:
 
 ## Restoring the database from Mongo Dump
 
-Alternatively, I have provided you with access to a data "dump". This
+I have provided you with access to a data "dump". This
 should allow you to upload all of the data which has been prepared directly
 into a development version of the database.
 
@@ -41,6 +41,7 @@ mongorestore --db rhomis-data-dev path_to_dump_folder
 
 ## Creating local DB using dataverse files and R script (more challenging, and takes ages to run)
 
+Alternatively, if you want to use the data from the harvard datavers,
 I have created a script for you to load all of the RHoMIS data into a local
 mongoDB database. Download the data [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/TFXQJN)
 as a zip file. Extract the contents from the zip file and place them in the blank `data`
