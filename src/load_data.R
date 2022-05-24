@@ -52,6 +52,7 @@ data_chunks <- sapply(rhomis_ids, function(rhomis_id){
 # Actually writing the files to the database
 for (file in files){
     # Read in the file
+
     print(file)
     print(paste(which(files==file), "out of", length(files)))
 
@@ -100,8 +101,10 @@ for (file in files){
          conversion_type<- get_file_name(file)
         # Split by project and form
         for (chunk in data_chunks){
+            # Sticking on 5
+            data_chunk <- data[data$id_rhomis_dataset==chunk$id_rhomis_dataset,]    
             
-            data_chunk <- data[data$id_rhomis_dataset==chunk$id_rhomis_dataset,]            
+            # Splitting into smaller chunks
             proj_id <- chunk$proj_id
             form_id <- chunk$form_id
 
@@ -128,6 +131,20 @@ for (file in files){
             data_chunk <- data[chunk$rows,]
             proj_id <- chunk$proj_id
             form_id <- chunk$form_id
+
+             df_memory <- as.numeric(object.size(data_chunk))
+            df_memory_limit <- 1250000
+            if (df_memory>df_memory_limit)
+            {
+                divisions <- ceiling(df_memory/df_memory_limit)
+                sub_chunk_size <- floor(nrow(data_chunk)/divisions)
+                n <- nrow(data_chunk)
+                r  <- rep(1:ceiling(n/sub_chunk_size),each=sub_chunk_size)[1:n]
+                chunked_data <- split(data_chunk,r)
+                
+                data_chunk <- chunked_data[[1]] 
+            }
+
 
             save_data_set_to_db(
             data = data_chunk,
