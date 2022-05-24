@@ -93,7 +93,85 @@ the case of the public data, all of these processing stages have already occured
 
 The collections `forms` and `projects` contain information
 from the authentication API. This includes information on
-individual surveys.
+individual surveys. The collection `units_and_conversions_log`
+contains history of previous unit conversions which have been used and modified byn users.
+
+Finally, we have two collections which actually contain the
+data on each of the projects. First we have the "units_and_conversions" collection. This collection
+corresponds to the `units` field of the `projectData`
+collection. It contains all of the units for an individual
+project. The second collection is `data`. This corresponds to
+the `dataSets` field of the `projectData` collection.
+
+The `data` and `projectData` collections are likely what
+you will use to create a dashboard. The contents of the
+`data` collection look like this:
+
+```
+[
+        {
+        _id: ObjectId("626a5d73eea8ef0f176bb6de"),
+        dataType: 'milk_price_per_litre',
+        formID: 'test_form_id',
+        projectID: 'test_project_id',
+        data: [
+        {
+            id_unique: 'uuid:403d9bcf-28d5-45bb-bfba-61d20ec7bcf1',
+            id_hh: 'e0bc297205b08a6aa49d6c9b3cc8b8cc',
+            id_rhomis_dataset: 'cd61facdcf970db01abdac65c5392aeb',
+            id_form: 'test_form_id',
+            id_proj: 'test_project_id',
+            buffalo: null,
+            bees: null
+            ...
+        },
+        {
+            id_unique: 'uuid:0b5207f3-db01-4668-bfed-dbe1a604e0ac',
+            id_hh: '997f602e95e38cd40aed59aa4f7debad',
+            id_rhomis_dataset: '52ebcf202d36fcb4cd18bf0ac6553c28',
+            id_form: 'test_form_id',
+            id_proj: 'test_project_id',
+            buffalo: null,
+            bees: null
+            ...
+        },
+        ...
+        ]
+    },
+
+    {
+        _id: ObjectId("626a5d73eea8ef0f176bb6de"),
+        dataType: 'milk_price_per_litre',
+        formID: 'test_form_id',
+        projectID: 'test_project_id',
+        data: [
+        {
+            id_unique: 'uuid:403d9bcf-28d5-45bb-bfba-61d20ec7bcf1',
+            id_hh: 'e0bc297205b08a6aa49d6c9b3cc8b8cc',
+            id_rhomis_dataset: 'cd61facdcf970db01abdac65c5392aeb',
+            id_form: 'test_form_id',
+            id_proj: 'test_project_id',
+            buffalo: null,
+            bees: null
+            ...
+        },
+        {
+            id_unique: 'uuid:0b5207f3-db01-4668-bfed-dbe1a604e0ac',
+            id_hh: '997f602e95e38cd40aed59aa4f7debad',
+            id_rhomis_dataset: '52ebcf202d36fcb4cd18bf0ac6553c28',
+            id_form: 'test_form_id',
+            id_proj: 'test_project_id',
+            buffalo: null,
+            bees: null
+            ...
+        },
+        ...
+        ]
+    }
+```
+
+The actual household level information is found in the `data` field.
+Each object in the array represents a household, each key a column header, and each value the corresponding value for that household. Data sets can be indexed by project, form, and the "type" of data (e.g. indicator data, crop data etc...).
 
 # Guidelines for Working
 
