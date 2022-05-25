@@ -49,6 +49,30 @@ data_chunks <- sapply(rhomis_ids, function(rhomis_id){
 }, simplify=F)
 
 
+#  for (chunk_index in 1:length(data_chunks)){
+#             chunk <- data_chunks[[chunk_index]] 
+#             data_chunk <- processed_data[chunk$rows,]
+#             proj_id <- chunk$proj_id
+#             form_id <- chunk$form_id
+
+#             df_memory <- as.numeric(object.size(data_chunk))
+#             df_memory_limit <- 1250000
+#             if (df_memory>df_memory_limit)
+#             {
+#                 divisions <- ceiling(df_memory/df_memory_limit)
+#                 sub_chunk_size <- floor(nrow(data_chunk)/divisions)
+#                 n <- nrow(data_chunk)
+#                 r  <- rep(1:ceiling(n/sub_chunk_size),each=sub_chunk_size)[1:n]
+
+                
+#                data_chunks[[chunk_index]]$rows <- data_chunks[[chunk_index]]$rows[r==1] 
+#             }
+
+#  }
+
+
+
+
 # Actually writing the files to the database
 for (file in files){
     # Read in the file
@@ -83,6 +107,10 @@ for (file in files){
             data_chunk <- data[data$id_rhomis_dataset==chunk$id_rhomis_dataset,]
             proj_id <- chunk$proj_id
             form_id <- chunk$form_id
+
+            if ("unit_type" %in% colnames(data_chunk)==F){
+               data_chunk$unit_type <- conversion_type 
+            }
 
             save_set_of_conversions(
                 database="rhomis-data-test",
@@ -132,7 +160,7 @@ for (file in files){
             proj_id <- chunk$proj_id
             form_id <- chunk$form_id
 
-             df_memory <- as.numeric(object.size(data_chunk))
+            df_memory <- as.numeric(object.size(data_chunk))
             df_memory_limit <- 1250000
             if (df_memory>df_memory_limit)
             {
@@ -163,30 +191,6 @@ for (file in files){
     # print("")
 }
 
-data_string <- jsonlite::toJSON(data, pretty = T, na = "null")
-    connection <- connect_to_db(collection, database, url)
-    if (overwrite == F) {
-        data_string <- paste0("{\"projectID\":\"", projectID, 
-            "\",\"formID\":", formID, "\"dataType\":", data_type, 
-            ", \"data\"", ":", data_string, "}")
-        data_string <- gsub("\n", "", data_string, fixed = T)
-        data_string <- gsub("\\\"", "\"", data_string, fixed = T)
-        data_string <- gsub("\"\\", "\"", data_string, fixed = T)
-        connection$insert(data_string)
-    }
-    if (overwrite == T) {
-        connection$update(paste0("{\"projectID\":\"", projectID, 
-            "\",\"formID\":\"", formID, "\"}"), paste0("{\"$set\":{\"data\": ", 
-            data_string, "}}"), upsert = TRUE)
-    }
-    connection$disconnect()
-
-
-#save_set_of_conversions
-#add_data_to_db
 
 
 
- for (chunk in data_chunks){
-     print(chunk$rows)
- }

@@ -816,8 +816,8 @@
       "RemoteRepo": "rhomis-R-package",
       "RemoteUsername": "l-gorman",
       "RemoteRef": "HEAD",
-      "RemoteSha": "c0d752ffb42bdb9f4181d0013dd52dff53b9f566",
-      "Hash": "9c336d8e4f121c03f13784cfec4f5dc8",
+      "RemoteSha": "417c33d81d346ea16bd64df4c603d8c8bc44c0bb",
+      "Hash": "bc16ee83dc4a6e4ae0d6a79bdf7ec07b",
       "Requirements": [
         "devtools",
         "digest",
