@@ -6,11 +6,22 @@ into the RHoMIS 2.0 system. The dashboard should summarise
 data from the publicly available RHoMIS data, which can be
 found [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/TFXQJN)
 
+We suggest that to build the dashboard, you should:
+
+1. Create a local version of the database to work with
+2. Extend the existing RHoMIS 2.0 data API, adding API endpoints to format the data into a dashboard ready format
+3. Build a stand alone front end to interect with the API and present the data in a user friendly way.
+
 This repository shows you how to convert the RHoMIS data (found
 on dataverse) into the format in which projects are stored on
-the RHoMIS survey, making it useable for development purposes.
+the RHoMIS server, making it useable for development purposes.
 
-There is also guidance here about how to work on the APIs, which
+There are two ways you can convert the data:
+
+1. Load the mongodump data which has been shared with you on google drive (easier option)
+2. Use the R code in this repository to convert data from harvard dataverse into mongodb format (takes longer to run)
+
+This repository also contains is also guidance here about how to work on the APIs, which
 will be a necessary part of developing a dashboard.
 
 # Materials
@@ -39,7 +50,7 @@ the command line and enter the command:
 mongorestore --db rhomis-data-dev path_to_dump_folder
 ```
 
-## Creating local DB using dataverse files and R script (more challenging, and takes ages to run)
+## Creating local DB using dataverse files and R script
 
 Alternatively, if you want to use the data from the harvard datavers,
 I have created a script for you to load all of the RHoMIS data into a local
@@ -136,64 +147,45 @@ you will use to create a dashboard. The contents of the
         dataType: 'milk_price_per_litre',
         formID: 'test_form_id',
         projectID: 'test_project_id',
-        data: [
-        {
-            id_unique: 'uuid:403d9bcf-28d5-45bb-bfba-61d20ec7bcf1',
-            id_hh: 'e0bc297205b08a6aa49d6c9b3cc8b8cc',
-            id_rhomis_dataset: 'cd61facdcf970db01abdac65c5392aeb',
-            id_form: 'test_form_id',
-            id_proj: 'test_project_id',
-            buffalo: null,
-            bees: null
-            ...
+        data:
+            {
+                id_unique: 'uuid:403d9bcf-28d5-45bb-bfba-61d20ec7bcf1',
+                id_hh: 'e0bc297205b08a6aa49d6c9b3cc8b8cc',
+                id_rhomis_dataset: 'cd61facdcf970db01abdac65c5392aeb',
+                id_form: 'test_form_id',
+                id_proj: 'test_project_id',
+                buffalo: null,
+                bees: null
+                ...
+            }
         },
         {
-            id_unique: 'uuid:0b5207f3-db01-4668-bfed-dbe1a604e0ac',
-            id_hh: '997f602e95e38cd40aed59aa4f7debad',
-            id_rhomis_dataset: '52ebcf202d36fcb4cd18bf0ac6553c28',
-            id_form: 'test_form_id',
-            id_proj: 'test_project_id',
-            buffalo: null,
-            bees: null
-            ...
-        },
-        ...
-        ]
-    },
-
-    {
         _id: ObjectId("626a5d73eea8ef0f176bb6de"),
         dataType: 'milk_price_per_litre',
         formID: 'test_form_id',
         projectID: 'test_project_id',
-        data: [
-        {
-            id_unique: 'uuid:403d9bcf-28d5-45bb-bfba-61d20ec7bcf1',
-            id_hh: 'e0bc297205b08a6aa49d6c9b3cc8b8cc',
-            id_rhomis_dataset: 'cd61facdcf970db01abdac65c5392aeb',
-            id_form: 'test_form_id',
-            id_proj: 'test_project_id',
-            buffalo: null,
-            bees: null
-            ...
-        },
-        {
-            id_unique: 'uuid:0b5207f3-db01-4668-bfed-dbe1a604e0ac',
-            id_hh: '997f602e95e38cd40aed59aa4f7debad',
-            id_rhomis_dataset: '52ebcf202d36fcb4cd18bf0ac6553c28',
-            id_form: 'test_form_id',
-            id_proj: 'test_project_id',
-            buffalo: null,
-            bees: null
-            ...
-        },
+        data:
+            {
+                id_unique: 'uuid:0b5207f3-db01-4668-bfed-dbe1a604e0ac',
+                id_hh: '997f602e95e38cd40aed59aa4f7debad',
+                id_rhomis_dataset: '52ebcf202d36fcb4cd18bf0ac6553c28',
+                id_form: 'test_form_id',
+                id_proj: 'test_project_id',
+                buffalo: null,
+                bees: null
+                ...
+            }
+        }
         ...
         ]
     }
+]
+
+
 ```
 
-The actual household level information is found in the `data` field.
-Each object in the array represents a household, each key a column header, and each value the corresponding value for that household. Data sets can be indexed by project, form, and the "type" of data (e.g. indicator data, crop data etc...).
+The actual household information is found in the `data` field.
+Each object in the array represents a household, each key in the `data` field represents a column header, and each value the corresponding value for that household. Data sets can be indexed by project, form, and the "type" of data (e.g. indicator data, crop data etc...).
 
 # Guidelines for Working
 
